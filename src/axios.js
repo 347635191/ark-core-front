@@ -1,8 +1,9 @@
 import axios from "axios";
 import { ElNotification } from "element-plus";
+import { API_BASE_URL } from '@/config/index';
 
 const service = axios.create({
-    baseURL: "http://192.168.226.130/statistics",
+    baseURL: `${API_BASE_URL}`,
     timeout: 1000,
 })
 

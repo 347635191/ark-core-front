@@ -57,6 +57,7 @@ onMounted(() => {
 })
 
 function loadData() {
+    // myChart.showLoading()
     let option = {
         xAxis: {
             type: 'category',
@@ -72,13 +73,12 @@ function loadData() {
             }
         ]
     };
-    myChart.showLoading()
     queryTeamRank(current.value).then(res => {
         option.xAxis.data = res.dateX
         option.series[0].data = res.rankY
         myChart.setOption(option)
     }).finally(() => {
-        myChart.hideLoading()
+        // myChart.hideLoading()
     })
 }
 

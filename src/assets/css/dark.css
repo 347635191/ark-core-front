@@ -1,0 +1,51 @@
+.dark h3,
+.dark h1,
+.dark h2,
+.dark .btn-clear,
+.dark .team-column-name,
+.dark .team-rank,
+.dark .score-normal {
+    color: rgba(255, 255, 255, 0.86) !important;
+}
+
+.dark .chat-header,
+.dark .chat-footer {
+    background: rgb(0, 0, 0) !important;
+}
+
+.dark .chat-header,
+.dark .chat-messages {
+    border-bottom: 1px solid rgb(46, 46, 46) !important;
+}
+
+.dark .chat-messages {
+    background: black;
+}
+
+.dark .f-header {
+    background: black;
+    color: #e5e7eb;
+    border-bottom: 1px solid #434343;
+}
+
+.dark .message-bubble-ai {
+    background-color: #1e1e1e !important;
+    border-radius: 1rem !important;
+    border-top-left-radius: 0.25rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid #333333 !important;
+    color: #e5e7eb !important;
+}
+
+.dark .chat-messages::-webkit-scrollbar-track {
+    background: #1a1a1a !important;
+}
+
+.dark .chat-messages::-webkit-scrollbar-thumb {
+    background: #4a4a4a !important;
+    border-radius: 3px !important;
+}
+
+.dark .chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #5a5a5a !important;
+}

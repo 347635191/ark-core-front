@@ -19,13 +19,13 @@ const routes = [{
       title: "指挥总部"
     }
   }, {
-    path: '/statistics/record',
+    path: '/front/statistics/record',
     component: Record,
     meta: {
       title: "GVG战绩"
     }
   }, {
-    path: '/chat/xxx',
+    path: '/front/chat',
     component: Chat,
     meta: {
       title: "聊天机器人"

@@ -4,9 +4,9 @@
         <transition name="table-height">
             <div class="team-battle-section">
                 <h3 class="section-title">团队战绩</h3>
-                <el-table :data="teamTableData" max-height="260" 
-                    :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" style="width: 100%"
-                    class="team-table center-table">
+                <el-table :data="teamTableData" max-height="260"
+                    :header-cell-style="{ color: '#606266' }" style="width: 90%"
+                    class="team-table center-table" v-loading="teamLoading">
                     <!-- 第一列：团队信息类别 -->
                     <el-table-column prop="columnName" :label="teamStatHead[0]" width="180" fixed>
                         <template #default="{ row }">
@@ -48,8 +48,8 @@
             <div class="user-battle-section">
                 <h3 class="section-title">团员战绩</h3>
                 <el-table :data="userTableData" :max-height="userTabletableMaxHeight"
-                    :header-cell-style="{ background: '#f5f7fa', color: '#606266' }" style="width: 100%"
-                    class="user-table center-table" :row-class-name="setUserRowClass">
+                    :header-cell-style="{ color: '#606266' }" style="width: 90%"
+                    class="user-table center-table" :row-class-name="setUserRowClass" v-loading="userLoading">
                     <!-- 第一列：用户名 -->
                     <el-table-column prop="name" :label="userStatHead[0]" width="180" fixed>
                         <template #default="{ row }">
@@ -86,46 +86,50 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { queryUserRecord, queryTeamRecord } from '@/api/manager'
-import { useStore } from 'vuex'
 import { useFullscreen } from '@vueuse/core'
+import {useRecordStore} from '@/stores/record'
 
-const store = useStore()
 const { isFullscreen } = useFullscreen()
+const teamLoading = ref(true)
+const userLoading = ref(true)
+const recordStore = useRecordStore()
 
 // 团队战绩数据
-const teamRecord = ref({})
-const teamStatHead = computed(() => teamRecord.value.statHead || [])
-const teamBattleRows = computed(() => teamRecord.value.teamBattleRows || [])
-const teamColumns = computed(() => teamRecord.value.teamColumns || [])
+const teamStatHead = computed(() => recordStore.teamRecord?.statHead || [])
+const teamBattleRows = computed(() => recordStore.teamRecord?.teamBattleRows || [])
+const teamColumns = computed(() => recordStore.teamRecord?.teamColumns || [])
 
 // 团员战绩数据
-const userRecord = ref({})
-const userStatHead = computed(() => userRecord.value.statHead || [])
-const userStatRows = computed(() => userRecord.value.userStatRows || [])
+const userStatHead = computed(() => recordStore.userRecord?.statHead || [])
+const userStatRows = computed(() => recordStore.userRecord?.userStatRows || [])
 
-onMounted(async () => {
+onMounted(() => {
     // 查询团队战绩
-    if (store.state.teamRecord) {
-        teamRecord.value = store.state.teamRecord
+    if (recordStore.teamRecord) {
+        teamLoading.value = false
     } else {
-        const res = await queryTeamRecord()
-        teamRecord.value = res
-        store.commit("setTeamRecord", teamRecord.value)
+        queryTeamRecord().then(res => {
+            recordStore.setTeamRecord(res);
+        }).finally(() => {
+            teamLoading.value = false
+        })
     }
 
     // 查询团员战绩
-    if (store.state.userRecord) {
-        userRecord.value = store.state.userRecord
+    if (recordStore.userRecord) {
+        userLoading.value = false
     } else {
-        const res = await queryUserRecord()
-        userRecord.value = res
-        store.commit("setUserRecord", userRecord.value)
+        queryUserRecord().then(res => {
+        recordStore.setUserRecord(res)
+        }).finally(()=>{
+          userLoading.value = false
+        })
     }
 })
 
 // 格式化分数
 const formatScore = (score) => {
-    if (score == null) return '-'
+    if (score == null || score === 100) return '-'
     if (score >= 0) return `${score}`
     return score.toString()
 }
@@ -137,17 +141,21 @@ const getCompleteAttackText = (completeAttack) => {
             return '未出完刀'
         case 3:
             return '满刀'
+        case 4:
+            return '暂未统计'
+        case 5:
+            return '未入团'
         default:
             return ''
     }
 }
 
 const formatBattleResult = (state) => {
-    return state === 0 ? '胜利' : '失败'
+    return state === 0 ? '失败' : '胜利'
 }
 
 const getBattleResultType = (state) => {
-    return state === 0 ? 'success' : 'danger'
+    return state === 0 ? 'danger' : 'success'
 }
 
 const userTabletableMaxHeight = computed(() => {
@@ -174,7 +182,7 @@ const userTableData = computed(() => {
 })
 
 // 设置行类名
-const setUserRowClass = ({ row }) => {
+const setUserRowClass = () => {
     return 'user-row'
 }
 </script>
@@ -197,13 +205,6 @@ const setUserRowClass = ({ row }) => {
 
 .team-battle-section {
     margin-bottom: 24px;
-}
-
-/*表格第一列背景蓝色*/
-:deep(.team-table .el-table__row td:first-child),
-:deep(.user-table .el-table__row td:first-child) {
-    background-color: #f0f9ff;
-    font-weight: 500;
 }
 
 /* 通用表格样式 */

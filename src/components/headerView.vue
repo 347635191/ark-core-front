@@ -6,14 +6,18 @@
             </el-icon>
             菊爆之家
         </span>
-        <el-icon class="icon-btn" @click="$store.commit('handleAsideWidth')">
-            <fold v-if="$store.state.asideWidth == '250px'" />
-            <Expand v-else />
+        <el-icon class="icon-btn" @click="menuStore.handleAsideWidth">
+            <Expand v-if="menuStore.isAsideCollapsed" />
+            <fold v-else />
         </el-icon>
-        <div class="ml-auto flex items-center mr-50">
+        <div class="ml-auto flex items-center mr-60">
             <el-icon class="icon-btn" @click="toggle">
                 <full-screen v-if="!isFullscreen" />
                 <aim v-else />
+            </el-icon>
+            <el-icon class="icon-btn" @click="toggleDark()">
+                <sunny v-if="!isDark" />
+                <moon v-else />
             </el-icon>
         </div>
     </div>
@@ -44,7 +48,11 @@
 </style>
 
 <script setup>
-import { useFullscreen } from '@vueuse/core'
+import { useFullscreen, useDark, useToggle } from '@vueuse/core'
+import {useMenuStore} from '@/stores/menu'
 
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
 const { isFullscreen, toggle } = useFullscreen()
+const menuStore = useMenuStore()
 </script>

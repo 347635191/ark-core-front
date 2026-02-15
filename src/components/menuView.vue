@@ -1,8 +1,13 @@
 <template>
-    <div class="f-menu" :style="{ width: $store.state.asideWidth }">
-        <el-menu :collapse="isCollapse" :default-active="defaultActive" class="border-0" @select="handleSelect"
-            :collapse-transition="false">
-            <template v-for="(item, index) in asideMenus" :key="index">
+    <div class="f-menu" :style="{ width: menuStore.asideWidth }">
+        <el-menu 
+            :collapse="menuStore.isAsideCollapsed" 
+            :default-active="defaultActive" 
+            class="border-0" 
+            @select="handleSelect"
+            :collapse-transition="false"
+        >
+            <template v-for="(item, index) in menuStore.asideMenus" :key="index">
                 <el-sub-menu v-if="item.childList && item.childList.length > 0" :index="item.name">
                     <template #title>
                         <el-icon>
@@ -10,7 +15,11 @@
                         </el-icon>
                         <span>{{ item.name }}</span>
                     </template>
-                    <el-menu-item v-for="(item2, index2) in item.childList" :key="index2" :index="item2.frontPath">
+                    <el-menu-item 
+                        v-for="(item2, index2) in item.childList" 
+                        :key="index2" 
+                        :index="item2.frontPath"
+                    >
                         <el-icon>
                             <component :is="item2.icon"></component>
                         </el-icon>
@@ -31,48 +40,25 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import { ref, computed } from 'vue'
-import { useStore } from 'vuex'
+import { ref } from 'vue'
 import { onMounted } from 'vue'
 import { queryMenu } from '@/api/manager'
+import { useMenuStore } from '@/stores/menu'
 
 const router = useRouter()
 const route = useRoute()
+const menuStore = useMenuStore()
 const defaultActive = ref(route.path)
-const store = useStore()
 
-const asideMenus = ref([])
 const handleSelect = (e) => {
     router.push(e)
 }
 
-//是否折叠
-const isCollapse = computed(() => !(store.state.asideWidth == '250px'))
-
 onMounted(async () => {
     // 如果数据未加载，则获取数据
-    if (store.state.menus.length === 0) {
+    if (menuStore.asideMenus.length === 0) {
         const res = await queryMenu()
-        asideMenus.value = res
-        store.commit("setMenus", asideMenus.value)
-    } else {
-        asideMenus.value = store.state.menus
+        menuStore.setAsideMenus(res)
     }
 })
 </script>
-
-<style>
-.f-menu {
-    transition: all 0.1s;
-    top: 64px;
-    bottom: 0;
-    left: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    @apply shadow fixed;
-}
-
-.f-menu::-webkit-scrollbar {
-    width: 0px;
-}
-</style>
